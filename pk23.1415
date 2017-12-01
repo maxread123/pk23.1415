@@ -1,0 +1,197 @@
+Zadatak 1. 
+Definirajte klasu Kartica koja kao atribute ima id i stanje. Klasa treba imati i dvije dodatne metode uplati i isplati koje će kao argument primiti neki iznos i za taj iznos promijeniti atribut stanje (uplati poveća stanje za dani iznos, isplati smanji stanje za dani iznos). Klasa treba imati i poseban atribut klase brojTransakcija koji će brojati koliko puta se izvršila uplata ili isplata, neovisno na kojoj kartici. 
+Zatim definirajte klasu VIPKartica koja će naslijediti klasu Kartica. VIPKartica treba imati metodu isplati isto kao i klasa Kartica, ali uz još jedan dodatni izborni argument paziNaPrekoracenje koji će po defaultu biti postavljen na False. Ako je vrijednost atributa paziNaPrekoracenje False, metoda isplati treba pozvati metodu isplati iz klase Kartica. Ako je vrijednost atributa paziNaPrekoracenje True, metoda isplati treba provjeriti hoće li isplata dovesti stanje u minus. Ako hoće, treba baciti ValueError sa porukom: "Nećemo napraviti ovu transakciju jer ćete otići u minus!", u suprotnom, treba napraviti isplatu i ažurirati vrijednost atributa brojTransakcija. 
+ 
+class Kartica: 
+    brojTransakcija=0 
+    def __init__(self,id_kartice,stanje): 
+        self.id_kartice=id_kartice 
+        self.stanje=stanje 
+    def uplati(self,iznos): 
+        self.stanje+=iznos 
+        Kartica.brojTransakcija+=1 
+    def isplati(self,iznos): 
+        self.stanje-=iznos 
+        Kartica.brojTransakcija+=1 
+class VIPKartica(Kartica): 
+    def __init__(self,id_kartice,stanje): 
+        Kartica.__init__(self,id_kartice,stanje) 
+    def isplati(self,iznos,paziNaPrekoracenje=False): 
+        if paziNaPrekoracenje==False: 
+            Kartica.isplati(self,iznos) 
+        else: 
+            try: 
+                if(self.stanje-iznos<0): 
+                    raise ValueError("Necemo napraviti ovu transakciju jer cete otici u minus!") 
+                else: 
+                    self.stanje-=iznos 
+                    Kartica.brojTransakcija+=1 
+            except ValueError as err: 
+                print(err) 
+if __name__=="__main__": 
+    k1=Kartica(1,1234.65) 
+    print("Broj transakcija: ",k1.brojTransakcija) 
+    print("Stanje kartice: ",k1.stanje) 
+    k1.uplati(250) 
+    print("Broj transakcija: ",k1.brojTransakcija) 
+    print("Stanje kartice: ",k1.stanje) 
+    k2=VIPKartica(2,2365.23) 
+    print("Broj transakcija: ",k2.brojTransakcija) 
+    print("Stanje kartice: ",k2.stanje) 
+    k2.isplati(4000,True) 
+    print("Broj transakcija: ",k2.brojTransakcija) 
+    print("Stanje kartice: ",k2.stanje) 
+    k2.isplati(1000,True) 
+    print("Broj transakcija: ",k2.brojTransakcija) 
+    print("Stanje kartice: ",k2.stanje) 
+Page Break
+ 
+Zadatak 2. 
+Napišite funkciju promijeni koja će kao prvi argument dobiti listu slova, a kao drugi argument neki string. Funkcija treba u danom stringu sva slova koja se pojavljuju u danoj listi prebaciti u uppercase i kao rezultat vratiti takav promijenjen string. 
+U main dijelu programa tražite od korisnika da unese neki prirodan broj n. Zatim n puta tražite od korisnika da unese neko slovo i to slovo dodajte u listu listaSlova. Učitajte file text.txt te koristeći funkciju promijeni, svaki redak filea modificirajte koristeči listu listaSlova. Takve modificirane rečenice spremite u novi file izmjenaTeksta.txt.Za funkciju promijeni u posebnom fileu napravite unittest sa barem tri testa. 
+ 
+def promijeni(lista,string): 
+    rj="" 
+    for slovo in string: 
+        if slovo in lista: 
+            rj+=slovo.upper() 
+        else: 
+            rj+=slovo 
+    return rj 
+ 
+if __name__=="__main__": 
+    n=int(input("Unesite prirodan broj n: ")) 
+    listaSlova=[] 
+    for i in range(0,n): 
+        unos=input("Unesite slovo: ") 
+        listaSlova.append(unos) 
+    # u fajlu koji sam predao sam unio 3 slova, V,U,P i njih pretvorio u uppercase 
+    file=open("tekst.txt","r") 
+    file2=open("izmjenaTeksta.txt","w") 
+    for line in file: 
+        file2.write(promijeni(listaSlova,line)) 
+    file.close() 
+    file2.close() 
+ 
+ 
+import zadatak2_RenatoDean 
+import unittest 
+class TestirajPromijeni(unittest.TestCase): 
+    def test_promijeni_pr1(self): 
+        rez  = zadatak2_RenatoDean.promijeni(['v','u','p'],"avokado") 
+        t_rez= "aVokado" 
+        self.assertEqual(rez, t_rez) 
+    def test_promijeni_pr2(self): 
+        rez  = zadatak2_RenatoDean.promijeni(['o','d','j'],"ajme meni nije mi dobro") 
+        t_rez= "aJme meni niJe mi DObrO" 
+        self.assertEqual(rez, t_rez) 
+    def test_promijeni_pr3(self): 
+        rez  = zadatak2_RenatoDean.promijeni(['h','e','l','p'],"treba prezivit drugi mjesec") 
+        t_rez= "trEba PrEzivit drugi mjEsEc" 
+        self.assertEqual(rez, t_rez) 
+if __name__ == "__main__": 
+    unittest.main(exit=False)
+Page Break
+ 
+Zadatak 3. 
+Tražote od korisnika da unosi brojeve sve dok ne unese neki prirodan broj izmedu 10000 i 10000000 (koristite try i except i svaki put kad nije unesen broj pokupite iznimku ili ako je unesen broj koji nije u danom rasponu, bacite ValueError). 
+Kada dobijete valjan broj, pozovite funkciju izracunaj koja će za dani broj vratiti rezultat sljedeće operacije: ako je broj peteroznamenkast., vrati sumu njegovih znamenki; ako je broj šesteroznamenkast, vrati aritmetičku sredinu njegovih znamenki; ako je broj sedmeroznamenkast, vrati sumu djelitelja tog broja. 
+Za funkciju izracunaj napravite odgovarajući doctest sa barem tri testa i pokrenite ga i main dijelu programa. 
+ 
+uneseno=0 
+while(uneseno==0): 
+    try: 
+        broj=int(input("Unesite prirodan broj izmedu 10000 i 10000000: ")) 
+        if(broj<=10000 or broj >=10000000): 
+            raise ValueError("Broj nije u rasponu") 
+        uneseno+=1 
+    except ValueError as err: 
+        print(err) 
+def izracunaj(broj): 
+    """ 
+    >>> izracunaj(15000) 
+    6 
+    >>> izracunaj(111111) 
+    1.0 
+    >>> izracunaj(1234567) 
+    1244416 
+    """ 
+    if(broj > 10000 and broj < 100000): 
+        suma=0 
+        while broj: 
+            suma+=broj%10 
+            broj=broj//10 
+        return suma 
+    elif(broj >= 100000 and broj < 1000000): 
+        suma=0 
+        while broj: 
+            suma+=broj%10 
+            broj=broj//10 
+        return suma/6 
+    else: 
+        suma=0 
+        for i in range(1,broj+1): 
+            if broj%i==0: 
+                suma+=i 
+        return suma 
+if __name__=="__main__": 
+    import doctest 
+    doctest.testmod() 
+    print(izracunaj(broj))
+Page Break
+ 
+Zadatak 4. 
+U nekom kinu se nalazi 15 redova sa po 25 sjedala u redu. Prije projekcije nekog flima je moguće napravite rezervaciju na jedan od tri načina: telefonskom rezervacijom, rezervacijom na blagajni li rezervacijom putem interneta. 
+Diferirajte funkciju rezerviraj koja te primati dva argumenta: sjedalo - uredeni par koji na prvom mjestu ina oznaku reda, a na drugom mjestu oznaku sjedala i nacin- string koji kaže na koji je od tri moguća načina karta rezervirana. Funkcija rezerviraj treba provjeriti nalazi li se sjedalo u listi rezerviranih; ukoliko se nalazi treba ispisati: "Nažalost, sjedalo() u redu () je već rezervirano.", u suprotnom, treba dodati sjedalo u listu rezerviranih, povećati globalnu varijablu brojRezerviranihMjesta za jedan i napisati poruku: "Sjedalo () u redu () uspješno rezervirano koristeći način." 
+Zatim definirajte funkciju telefonskaRezervacija koja te kao argument primati neki prirodan broj n. Funkcija treba n puta na slučajan način generirati red i sjedalo, pozvati funkciju rezerviraj i proslijediti joj generirano sjedalo kao prvi argument, a kao drugi argument string 'telefonska rezervacija' te pozvati funkciju sleep na 1,5s. Definirajte i funkciju rezervacijaNaBlagajni koja će također kao argument primati neki prirodan broj n, zatim n puta na slučajan način generirati red i sjedalo, pozvati funkciju rezerviraj i proslijediti joj generirano sjedalo kao prvi argument, a kao drugi argument string 'rezervacija na blagajni' te pozvati funkciju sleep na 1 s. Na kraju definirajte funkciju internetRezervacija koja će kao argument primati neki prirodan broj n, zatim n puta na slučajan način generirati red i sjedalo, pozvati funkciju rezerviraj i proslijediti generirano sjedalo kao prvi argument, a kao drugi argument string 'rezervacija na internetu' te pozvati funkciju sleep na 0,5s. 
+U main dijelu programa napravite tri threada koristeći biblioteku threading. Prvi thread treba pozvati funkciju telefonskaRezervacija sa argumentom koji je slučajan broj između 40 i 100, drugi thread treba pozvati funkciju rezervacijaNaBlagajni sa argumentom koji je slučajan broj između 20 i 70, a treći thread treba pozvati funkciju internetRezervacija sa argumentom koji je slučajan broj između 70 i 150. 
+Pokrenite threadove i neka glavni thread pričeka da child threadovi zavr0e prije nego što prestane sa izvršavanjem. Na kraju ispišite listu rezerviranih mjesta i koliki je postotak dvorane rezerviran. 
+Napomena: u zadatku je na odgovarajućem mjestu potrebno koristiti lock mehanizam. 
+ 
+import threading,random,time 
+lock=threading.Lock() 
+def rezerviraj (sjedalo,nacin): 
+    global lista_rezerviranih,brojRezerviranihMjesta 
+    if sjedalo in lista_rezerviranih: 
+        print("Nazalost, sjedalo {} u redu {} je vec rezervirano".format(sjedalo[1],sjedalo[0])) 
+    else: 
+        lock.acquire() 
+        lista_rezerviranih.append(sjedalo) 
+        brojRezerviranihMjesta+=1 
+        lock.release() 
+        print("Sjedalo {} u redu {} uspjesno rezervirano koristeci {}".format(sjedalo[1],sjedalo[0],nacin)) 
+         
+def telefonskaRezervacija(n): 
+    for i in range(0,n): 
+        sjedalo=(random.randint(1,15),random.randint(1,25)) 
+        rezerviraj(sjedalo,"telefonska rezervacija") 
+        time.sleep(1.5) 
+         
+def rezervacijanaBlagajni(n): 
+    for i in range(0,n): 
+        sjedalo=(random.randint(1,15),random.randint(1,25)) 
+        rezerviraj(sjedalo,"rezervacija na blagajni") 
+        time.sleep(1) 
+         
+def internetRezervacija(n): 
+    for i in range(0,n): 
+        sjedalo=(random.randint(1,15),random.randint(1,25)) 
+        rezerviraj(sjedalo,"rezervacija na internetu") 
+        time.sleep(0.5) 
+if __name__=="__main__": 
+    lista_rezerviranih=[] 
+    brojRezerviranihMjesta=0 
+    x=random.randint(40,100) 
+    y=random.randint(20,70) 
+    z=random.randint(70,150) 
+    t1=threading.Thread(target=telefonskaRezervacija,args=(x,)) 
+    t2=threading.Thread(target=rezervacijanaBlagajni,args=(y,)) 
+    t3=threading.Thread(target=internetRezervacija,args=(z,)) 
+    t1.start() 
+    t2.start() 
+    t3.start() 
+    t1.join() 
+    t2.join() 
+    t3.join() 
+    print(lista_rezerviranih) 
+    print("Postotak rezerviranosti je {} % ".format((brojRezerviranihMjesta/(x+y+z))*100)) 
